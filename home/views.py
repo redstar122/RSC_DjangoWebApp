@@ -1,0 +1,24 @@
+from django.shortcuts import render
+
+def dynamic_form(request):
+    if request.method == "POST":
+        student_name = request.POST.get("student_name")
+        program = request.POST.get("program")
+        year_level = request.POST.get("year_level")  # Extracted year_level
+
+        context = {
+            "student_name": student_name,
+            "program": program,
+            "year_level": year_level  # Passed to template context
+        }
+
+        return render(
+            request,
+            "home/welcome.html",
+            context
+        )
+
+    return render(
+        request,
+        "home/dynamic_form.html"
+    )
