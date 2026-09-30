@@ -10,6 +10,17 @@
     <h2>Total Students</h2>
     <span id="student-count">0</span>
     <div id="status-message" role="status" aria-live="polite">Loading student records...</div>
+
+    <!-- ENHANCEMENT CONTROLS -->
+    <div style="margin: 15px 0;">
+        <input type="text" id="search-input" placeholder="Search by name or email..." />
+        <select id="program-filter">
+            <option value="">All Programs</option>
+        </select>
+        <button id="clear-filters-btn">Clear Filters</button>
+        <button id="refresh-btn">Refresh Data</button>
+    </div>
+
     <table border="1">
         <thead>
             <tr>
