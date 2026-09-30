@@ -1,28 +1,47 @@
-async function loadStudents() {
-	const countElement = document.getElementById('student-count');
-	const statusElement = document.getElementById('student-status');
+document.addEventListener('DOMContentLoaded', () => {
+	fetchStudentData();
+});
+
+async function fetchStudentData() {
 	const tableBody = document.getElementById('student-table-body');
+	const countElement = document.getElementById('student-count');
+	const statusMessage = document.getElementById('status-message');
+
+	if (statusMessage) {
+		statusMessage.textContent = 'Loading student records...';
+		statusMessage.style.color = '';
+	}
 
 	try {
 		const response = await fetch('/api/students/', {
 			credentials: 'same-origin',
 		});
 
+		if (response.status === 401) {
+			throw new Error('401 Unauthorized: Please log in to view student data.');
+		}
+
 		if (!response.ok) {
-			if (response.status === 401) {
-				throw new Error('Authentication required. Please log in to load student data.');
-			}
-			throw new Error(`Unable to load students (HTTP ${response.status}).`);
+			throw new Error(`HTTP error! Status: ${response.status}`);
 		}
 
 		const data = await response.json();
 		const students = Array.isArray(data.students) ? data.students : [];
 
-		countElement.textContent = data.count;
+		if (countElement) {
+			countElement.textContent = data.count ?? students.length;
+		}
+
+		if (!tableBody) {
+			return;
+		}
+
 		tableBody.replaceChildren();
 
 		if (students.length === 0) {
-			statusElement.textContent = 'No student records found.';
+			if (statusMessage) {
+				statusMessage.textContent = 'No student records found.';
+			}
 			const emptyRow = document.createElement('tr');
 			const emptyCell = document.createElement('td');
 			emptyCell.colSpan = 5;
@@ -32,7 +51,6 @@ async function loadStudents() {
 			return;
 		}
 
-		statusElement.textContent = 'Student records loaded successfully.';
 		students.forEach((student) => {
 			const row = document.createElement('tr');
 			[
@@ -48,18 +66,27 @@ async function loadStudents() {
 			});
 			tableBody.appendChild(row);
 		});
-	} catch (error) {
-		countElement.textContent = 'Unavailable';
-		statusElement.textContent = error.message;
-		tableBody.replaceChildren();
 
-		const errorRow = document.createElement('tr');
-		const errorCell = document.createElement('td');
-		errorCell.colSpan = 5;
-		errorCell.textContent = error.message;
-		errorRow.appendChild(errorCell);
-		tableBody.appendChild(errorRow);
+		if (statusMessage) {
+			statusMessage.textContent = '';
+		}
+	} catch (error) {
+		console.error('Fetch error:', error);
+		if (statusMessage) {
+			statusMessage.textContent = error.message;
+			statusMessage.style.color = 'red';
+		}
+		if (countElement) {
+			countElement.textContent = 'Unavailable';
+		}
+		if (tableBody) {
+			tableBody.replaceChildren();
+			const errorRow = document.createElement('tr');
+			const errorCell = document.createElement('td');
+			errorCell.colSpan = 5;
+			errorCell.textContent = error.message;
+			errorRow.appendChild(errorCell);
+			tableBody.appendChild(errorRow);
+		}
 	}
 }
-
-loadStudents();

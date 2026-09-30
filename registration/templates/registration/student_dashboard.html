@@ -3,14 +3,13 @@
 <head>
     {% load static %}
     <title>Student Dashboard</title>
-    <script src="{% static 'registration/js/student_dashboard.js' %}" defer></script>
 </head>
 <body>
     <h1>Student Dashboard</h1>
     
     <h2>Total Students</h2>
-    <p id="student-count">Loading...</p>
-    <p id="student-status" role="status" aria-live="polite">Loading students...</p>
+    <span id="student-count">0</span>
+    <div id="status-message" role="status" aria-live="polite">Loading student records...</div>
     <table border="1">
         <thead>
             <tr>
@@ -68,5 +67,6 @@
     <hr>
 
     <a href="{% url 'student_list' %}">Back to Student List</a>
+    <script src="{% static 'registration/js/student_dashboard.js' %}"></script>
 </body>
 </html>
